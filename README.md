@@ -26,3 +26,6 @@ Read-only by design — that's the whole point.
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+---
+maintained · verified 2026-09-30
