@@ -33,3 +33,11 @@ maintained · verified 2026-09-30
 maintained · verified 2026-10-01
 ---
 maintained · verified 2026-10-02
+
+## Supported chains
+
+- Ethereum mainnet + Sepolia
+- Polygon
+- Arbitrum One
+
+Adding a chain means one entry in `chains.toml`: an RPC endpoint, confirmation depth, and the events you want indexed. PRs welcome.
