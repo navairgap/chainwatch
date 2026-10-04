@@ -41,3 +41,19 @@ maintained · verified 2026-10-02
 - Arbitrum One
 
 Adding a chain means one entry in `chains.toml`: an RPC endpoint, confirmation depth, and the events you want indexed. PRs welcome.
+
+## Webhook payload
+
+Registered webhooks receive a POST per matched event:
+
+```json
+{
+  "chain": "ethereum",
+  "block": 20938471,
+  "event": "0xddf252ad…",
+  "tx": "0x94d2…",
+  "confirmations": 12
+}
+```
+
+Non-2xx responses retry with exponential backoff, max 5 attempts.
