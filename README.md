@@ -62,3 +62,8 @@ Non-2xx responses retry with exponential backoff, max 5 attempts.
 ## Requirements
 
 any rpc endpoint you control or trust — a local node, an infura key, whatever. rate limits apply; chainwatch backs off politely on 429s.
+
+
+## Monitoring
+
+expose `/healthz` when running with `--server`: it returns 200 while the last block is within N minutes of now, 503 otherwise. point your uptime monitor at it.
