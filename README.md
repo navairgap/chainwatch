@@ -67,3 +67,9 @@ any rpc endpoint you control or trust — a local node, an infura key, whatever.
 ## Monitoring
 
 expose `/healthz` when running with `--server`: it returns 200 while the last block is within N minutes of now, 503 otherwise. point your uptime monitor at it.
+
+## Known limitations
+
+- you trust the rpc endpoint; a lying endpoint means lying data
+- reorgs deeper than the confirmation depth are treated as final — set the depth for your threat model
+- no mempool watching; confirmed blocks only
