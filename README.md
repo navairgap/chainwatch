@@ -79,3 +79,7 @@ expose `/healthz` when running with `--server`: it returns 200 while the last bl
 - you trust the rpc endpoint; a lying endpoint means lying data
 - reorgs deeper than the confirmation depth are treated as final — set the depth for your threat model
 - no mempool watching; confirmed blocks only
+
+## Config reference
+
+`chains.toml`: one table per chain — `rpc`, `confirmations`, `events`. unknown tables are ignored, so a shared config never breaks a single-chain deployment.
