@@ -83,3 +83,7 @@ expose `/healthz` when running with `--server`: it returns 200 while the last bl
 ## Config reference
 
 `chains.toml`: one table per chain — `rpc`, `confirmations`, `events`. unknown tables are ignored, so a shared config never breaks a single-chain deployment.
+
+## Timeouts
+
+default rpc timeout 10s with exponential backoff on timeouts and 429s, capped at 5 retries per batch. chains that lag fall behind visibly in the `/healthz` age, not silently.
