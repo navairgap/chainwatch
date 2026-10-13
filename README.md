@@ -87,3 +87,7 @@ expose `/healthz` when running with `--server`: it returns 200 while the last bl
 ## Timeouts
 
 default rpc timeout 10s with exponential backoff on timeouts and 429s, capped at 5 retries per batch. chains that lag fall behind visibly in the `/healthz` age, not silently.
+
+## Related projects
+
+ponder and subsquid index at scale with schemas; chainwatch stays a single-purpose watcher — pick it when you want events in a webhook, not a database.
