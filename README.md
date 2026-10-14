@@ -91,3 +91,7 @@ default rpc timeout 10s with exponential backoff on timeouts and 429s, capped at
 ## Related projects
 
 ponder and subsquid index at scale with schemas; chainwatch stays a single-purpose watcher — pick it when you want events in a webhook, not a database.
+
+## Data safety
+
+nothing is persisted except the last-processed block cursor, stored as one line in the data dir. delete it to re-index from genesis; move it to pause where you left off.
