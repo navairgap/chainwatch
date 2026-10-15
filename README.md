@@ -95,3 +95,7 @@ ponder and subsquid index at scale with schemas; chainwatch stays a single-purpo
 ## Data safety
 
 nothing is persisted except the last-processed block cursor, stored as one line in the data dir. delete it to re-index from genesis; move it to pause where you left off.
+
+## Failure modes
+
+rpc down: backoff, healthz goes stale, alerts stop — never half-processed. reorg past confirmation depth: the cursor rewinds and the batch replays. duplicate webhook deliveries happen; consumers dedupe by block number.
