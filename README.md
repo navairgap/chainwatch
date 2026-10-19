@@ -1,101 +1,40 @@
 # chainwatch
 
-A passive blockchain explorer CLI
+A planned read-only CLI for inspecting public blockchain data.
 
-> 🚧 **Status: planning** — architecture and README first, code next.
+> **Status: design stage.** This repository currently contains documentation only; RPC access, caching, and event watching are not implemented yet.
 
-## Why
+## Goal
 
-Web3 exploration, the safe way: chainwatch only *reads* public chain data — no keys, no transactions, no risk. Follow addresses, watch for movements, learn how chains actually work from the raw data.
+Provide a small tool for looking up public chain data and observing confirmed activity without holding private keys or submitting transactions.
 
-## Planned features
+## Initial scope
 
-- Query balances and transaction history for any address
-- Watch an address and notify on new activity
-- Decode common contract interactions (ERC-20 transfers)
-- Local SQLite cache so repeated queries are instant
+- Query an address balance and recent confirmed transactions on one chain.
+- Use an explicitly configured RPC endpoint.
+- Add bounded request timeouts and backoff for rate limits.
+- Offer JSON output for scripts.
+- Keep any local cache and cursor format documented and easy to remove.
 
-## Stack
+Event decoding, multi-chain support, webhooks, and a health endpoint are later milestones, not current features.
 
-`python` `web3.py` `ethereum` `sqlite`
+## Safety and correctness
 
-## Notes
+- Never request or store seed phrases, private keys, or wallet passwords.
+- Do not sign transactions or broadcast transactions.
+- Treat RPC responses as untrusted input and validate expected fields.
+- Make chain ID and network explicit to avoid confusing testnet and mainnet data.
+- Document that RPC providers can be unavailable or return incorrect data.
+- If event watching is added, account for chain reorganizations and duplicate deliveries.
 
-Read-only by design — that's the whole point.
+## Planned milestones
+
+- [ ] Define configuration and JSON output schemas.
+- [ ] Implement a single-chain read-only balance lookup.
+- [ ] Add mocked RPC tests for timeouts, malformed responses, and rate limiting.
+- [ ] Add transaction history with pagination limits.
+- [ ] Consider event watching after reorg handling is designed.
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
-
----
-maintained · verified 2026-09-30
----
-maintained · verified 2026-10-01
----
-maintained · verified 2026-10-02
-
-## Supported chains
-
-- Ethereum mainnet + Sepolia
-- Polygon
-- Arbitrum One
-
-Adding a chain means one entry in `chains.toml`: an RPC endpoint, confirmation depth, and the events you want indexed. PRs welcome.
-
-## Webhook payload
-
-Registered webhooks receive a POST per matched event:
-
-```json
-{
-  "chain": "ethereum",
-  "block": 20938471,
-  "event": "0xddf252ad…",
-  "tx": "0x94d2…",
-  "confirmations": 12
-}
-```
-
-Non-2xx responses retry with exponential backoff, max 5 attempts.
-
-
-## Requirements
-
-any rpc endpoint you control or trust — a local node, an infura key, whatever. rate limits apply; chainwatch backs off politely on 429s.
-
-
-## Monitoring
-
-expose `/healthz` when running with `--server`: it returns 200 while the last block is within N minutes of now, 503 otherwise. point your uptime monitor at it.
-
-## Known limitations
-
-- you trust the rpc endpoint; a lying endpoint means lying data
-- reorgs deeper than the confirmation depth are treated as final — set the depth for your threat model
-- no mempool watching; confirmed blocks only
-
-## Known limitations
-
-- you trust the rpc endpoint; a lying endpoint means lying data
-- reorgs deeper than the confirmation depth are treated as final — set the depth for your threat model
-- no mempool watching; confirmed blocks only
-
-## Config reference
-
-`chains.toml`: one table per chain — `rpc`, `confirmations`, `events`. unknown tables are ignored, so a shared config never breaks a single-chain deployment.
-
-## Timeouts
-
-default rpc timeout 10s with exponential backoff on timeouts and 429s, capped at 5 retries per batch. chains that lag fall behind visibly in the `/healthz` age, not silently.
-
-## Related projects
-
-ponder and subsquid index at scale with schemas; chainwatch stays a single-purpose watcher — pick it when you want events in a webhook, not a database.
-
-## Data safety
-
-nothing is persisted except the last-processed block cursor, stored as one line in the data dir. delete it to re-index from genesis; move it to pause where you left off.
-
-## Failure modes
-
-rpc down: backoff, healthz goes stale, alerts stop — never half-processed. reorg past confirmation depth: the cursor rewinds and the batch replays. duplicate webhook deliveries happen; consumers dedupe by block number.
+MIT. See [LICENSE](LICENSE).
