@@ -38,3 +38,8 @@ Event decoding, multi-chain support, webhooks, and a health endpoint are later m
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+
+## Maintenance notes
+
+Public RPC failures must remain distinct from valid empty results. Apply finite timeouts and bounded retries, validate JSON-RPC IDs and response shape, redact endpoint credentials from logs, and never request or store private keys.
