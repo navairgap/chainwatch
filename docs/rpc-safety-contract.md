@@ -24,3 +24,7 @@ Retry only transient transport errors and selected rate-limit/server errors. Do 
 ## Tests
 
 Use a mocked local transport to cover timeouts, malformed JSON, mismatched request IDs, RPC error objects, invalid quantities, rate limiting, and chain-ID mismatch. Unit tests must not need a real wallet or public RPC endpoint.
+
+## Cache correctness
+
+Include chain ID, RPC method, and normalized method parameters in every cache key. Do not reuse a cached result across different chains or caller-supplied block tags. If a response is served from cache, expose its block height or observation timestamp so consumers can judge freshness. Cache only successfully validated responses, and invalidate or refresh data after a detected reorganization when the cached value depends on an affected block.
