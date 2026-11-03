@@ -1,45 +1,34 @@
 # chainwatch
 
-A planned read-only CLI for inspecting public blockchain data.
+A read-only CLI prototype for inspecting public blockchain data.
 
-> **Status: design stage.** This repository currently contains documentation only; RPC access, caching, and event watching are not implemented yet.
+> **Current state: JSON-RPC validation helper.** The first standard-library helper validates JSON-RPC 2.0 response IDs and result/error shape. RPC transport, address lookups, pagination, caching, and event watching are not implemented.
 
-## Goal
+## Response validator
 
-Provide a small tool for looking up public chain data and observing confirmed activity without holding private keys or submitting transactions.
+The helper accepts a JSON string, UTF-8 bytes, or an already-decoded object. It rejects missing or mismatched IDs, invalid protocol versions, malformed error objects, and responses containing both result and error (or neither). A valid null result remains distinct from an RPC error. Remote RPC errors raise RpcRemoteError with the provider's code, message, and optional data.
 
-## Initial scope
+Run the focused tests with:
 
-- Query an address balance and recent confirmed transactions on one chain.
-- Use an explicitly configured RPC endpoint.
-- Add bounded request timeouts and backoff for rate limits.
-- Offer JSON output for scripts.
-- Keep any local cache and cursor format documented and easy to remove.
+    python -m unittest discover -s tests -v
 
-Event decoding, multi-chain support, webhooks, and a health endpoint are later milestones, not current features.
-
-## Safety and correctness
+## Read-only safety
 
 - Never request or store seed phrases, private keys, or wallet passwords.
-- Do not sign transactions or broadcast transactions.
-- Treat RPC responses as untrusted input and validate expected fields.
-- Make chain ID and network explicit to avoid confusing testnet and mainnet data.
-- Document that RPC providers can be unavailable or return incorrect data.
-- If event watching is added, account for chain reorganizations and duplicate deliveries.
+- Never sign or broadcast transactions.
+- Treat RPC responses as untrusted input and validate method-specific fields separately.
+- Keep chain ID and network explicit.
+- Use finite connection/response timeouts and bounded retries.
+- Redact endpoint credentials from logs.
 
-## Planned milestones
+## Remaining work
 
-- [ ] Define configuration and JSON output schemas.
-- [ ] Implement a single-chain read-only balance lookup.
-- [ ] Add mocked RPC tests for timeouts, malformed responses, and rate limiting.
-- [ ] Add transaction history with pagination limits.
-- [ ] Consider event watching after reorg handling is designed.
+- [ ] Add a configured read-only JSON-RPC transport.
+- [ ] Add batch response correlation by ID.
+- [ ] Validate chain IDs, addresses, and hexadecimal quantities.
+- [ ] Add mocked transport tests for timeouts, rate limits, and unexpected networks.
+- [ ] Add bounded pagination and an optional removable local cache.
 
 ## License
 
 MIT. See [LICENSE](LICENSE).
-
-
-## Maintenance notes
-
-Public RPC failures must remain distinct from valid empty results. Apply finite timeouts and bounded retries, validate JSON-RPC IDs and response shape, redact endpoint credentials from logs, and never request or store private keys.
