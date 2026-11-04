@@ -25,6 +25,10 @@ def _valid_id(value: object) -> bool:
     )
 
 
+def _reject_json_constant(value: str) -> None:
+    raise ValueError(f"non-standard JSON constant: {value}")
+
+
 def validate_response(payload: str | bytes | dict, expected_id: str | int) -> Any:
     """Return the result or raise a typed error; a null result is valid.
 
@@ -42,7 +46,7 @@ def validate_response(payload: str | bytes | dict, expected_id: str | int) -> An
 
     if isinstance(payload, str):
         try:
-            response = json.loads(payload)
+            response = json.loads(payload, parse_constant=_reject_json_constant)
         except (ValueError, RecursionError) as exc:
             raise RpcProtocolError("response is not valid JSON") from exc
     else:
