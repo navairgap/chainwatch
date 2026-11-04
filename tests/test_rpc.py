@@ -47,6 +47,12 @@ class JsonRpcResponseTests(unittest.TestCase):
             with self.subTest(error=error), self.assertRaises(RpcProtocolError):
                 validate_response(body, 1)
 
+    def test_rejects_non_standard_json_numeric_constants(self):
+        for constant in ("NaN", "Infinity", "-Infinity"):
+            body = f'{{"jsonrpc":"2.0","id":1,"result":{constant}}}'
+            with self.subTest(constant=constant), self.assertRaises(RpcProtocolError):
+                validate_response(body, 1)
+
     def test_rejects_malformed_json_and_wrong_protocol_version(self):
         with self.assertRaises(RpcProtocolError):
             validate_response("{broken", 1)
