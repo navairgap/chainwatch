@@ -29,6 +29,16 @@ def _reject_json_constant(value: str) -> None:
     raise ValueError(f"non-standard JSON constant: {value}")
 
 
+def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict:
+    """Reject ambiguous JSON objects before protocol validation."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON object key")
+        result[key] = value
+    return result
+
+
 def validate_response(payload: str | bytes | dict, expected_id: str | int) -> Any:
     """Return the result or raise a typed error; a null result is valid.
 
@@ -46,7 +56,11 @@ def validate_response(payload: str | bytes | dict, expected_id: str | int) -> An
 
     if isinstance(payload, str):
         try:
-            response = json.loads(payload, parse_constant=_reject_json_constant)
+            response = json.loads(
+                payload,
+                parse_constant=_reject_json_constant,
+                object_pairs_hook=_reject_duplicate_keys,
+            )
         except (ValueError, RecursionError) as exc:
             raise RpcProtocolError("response is not valid JSON") from exc
     else:

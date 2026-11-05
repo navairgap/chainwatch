@@ -53,6 +53,15 @@ class JsonRpcResponseTests(unittest.TestCase):
             with self.subTest(constant=constant), self.assertRaises(RpcProtocolError):
                 validate_response(body, 1)
 
+    def test_rejects_duplicate_keys_in_response_and_nested_error(self):
+        payloads = (
+            '{"jsonrpc":"2.0","id":1,"result":"safe","result":"ambiguous"}',
+            '{"jsonrpc":"2.0","id":1,"error":{"code":-1,"code":-2,"message":"bad"}}',
+        )
+        for payload in payloads:
+            with self.subTest(payload=payload), self.assertRaises(RpcProtocolError):
+                validate_response(payload, 1)
+
     def test_rejects_malformed_json_and_wrong_protocol_version(self):
         with self.assertRaises(RpcProtocolError):
             validate_response("{broken", 1)
