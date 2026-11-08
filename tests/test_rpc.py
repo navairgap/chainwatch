@@ -69,5 +69,14 @@ class JsonRpcResponseTests(unittest.TestCase):
             validate_response({"jsonrpc": "1.0", "id": 1, "result": 1}, 1)
 
 
+
+    def test_rejects_string_id_when_integer_id_was_expected(self):
+        body = {"jsonrpc": "2.0", "id": "7", "result": "0x0"}
+        with self.assertRaises(RpcProtocolError):
+            validate_response(body, 7)
+
+        with self.assertRaises(ValueError):
+            validate_response({"jsonrpc": "2.0", "id": 1, "result": None}, True)
+
 if __name__ == "__main__":
     unittest.main()
